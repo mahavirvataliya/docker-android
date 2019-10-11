@@ -1,4 +1,4 @@
-FROM openjdk:12-oracle
+FROM openjdk:12-oraclelinux7
 
 LABEL Description="This image provides a base Android development environment for React Native, and may be used to run tests."
 
