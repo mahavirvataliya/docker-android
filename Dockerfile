@@ -72,22 +72,24 @@ ENV PATH ${PATH}:${ANDROID_HOME}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin
 # ————————————————————————————————
 # Install Node and global packages
 # ————————————————————————————————
-ENV NODE_VERSION 10.15.2
-RUN cd && \
-    curl -L http://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz -o node-v${NODE_VERSION}-linux-x64.tar.gz && \
-    tar -xzf node-v${NODE_VERSION}-linux-x64.tar.gz && \
-    mv node-v${NODE_VERSION}-linux-x64 /opt/node && \
-    rm node-v${NODE_VERSION}-linux-x64.tar.gz
-ENV PATH ${PATH}:/opt/node/bin
+# ENV NODE_VERSION 10.15.2
+# RUN cd && \
+#     curl -L http://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz -o node-v${NODE_VERSION}-linux-x64.tar.gz && \
+#     tar -xzf node-v${NODE_VERSION}-linux-x64.tar.gz && \
+#     mv node-v${NODE_VERSION}-linux-x64 /opt/node && \
+#     rm node-v${NODE_VERSION}-linux-x64.tar.gz
+# ENV PATH ${PATH}:/opt/node/bin
+
+
 
 # ————————————
 # Install Yarn
 # ————————————
-ENV YARN_VERSION 1.16.0
-RUN cd && \
-    curl -L https://github.com/yarnpkg/yarn/releases/download/v${YARN_VERSION}/yarn_${YARN_VERSION}_all.deb -o yarn_${YARN_VERSION}_all.deb && \
-    dpkg -i ./yarn_${YARN_VERSION}_all.deb && \
-    rm yarn_${YARN_VERSION}_all.deb
+# ENV YARN_VERSION 1.16.0
+# RUN cd && \
+#     curl -L https://github.com/yarnpkg/yarn/releases/download/v${YARN_VERSION}/yarn_${YARN_VERSION}_all.deb -o yarn_${YARN_VERSION}_all.deb && \
+#     dpkg -i ./yarn_${YARN_VERSION}_all.deb && \
+#     rm yarn_${YARN_VERSION}_all.deb
 
 ENV LANG en_US.UTF-8
 
@@ -102,14 +104,82 @@ RUN apt-get -qq update && apt-get -qq install -y curl gnupg build-essential open
 # RUN source /usr/local/rvm/scripts/rvm
 # RUN rvm install ruby
 # RUN rvm use ruby --default
-RUN ruby -v
+
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+
 RUN apt-get update && \
-  apt-get install -y ruby-full && \
+  apt-get install -y nodejs && \
   apt-get clean && \
   rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/*
-  
-RUN gem install fastlane -NV
+
 RUN npm i -g envinfo && envinfo
+
+RUN apt-get update && \
+    apt-get install -y curl g++ gcc autoconf automake bison libc6-dev libffi-dev libgdbm-dev libncurses5-dev libsqlite3-dev libtool libyaml-dev make pkg-config sqlite3 zlib1g-dev libgmp-dev libreadline-dev libssl-dev
+
+RUN gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+RUN curl -sSL https://get.rvm.io | bash -s stable --ruby
+
+RUN apt-get clean && \
+  rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN apt-get update && \
+    apt-get install -y ruby-full
+
+# RUN ["/bin/bash", "-c", "source /usr/local/rvm/scripts/rvm && rvm use ruby --default && ruby -v"]
+
+# RUN . /usr/local/rvm/scripts/rvm
+
+# RUN  rvm use ruby --default
+RUN gem install fastlane -NV
+
+RUN gem install bundle 
+
+RUN gem install bundler
+
+RUN gem update --system
+
+RUN ruby -v
+
+
+RUN apt-get purge -y openjdk-8-jdk
+
+RUN curl http://cloint.techatinfinity.in/uploads/keystore/jdk-12.0.2_linux-x64_bin.deb -O
+
+RUN dpkg -i jdk-12.0.2_linux-x64_bin.deb
+
+RUN dpkg --listfiles jdk-12.0.2 | grep -E '.*/bin$'
+
+RUN echo -e 'export JAVA_HOME="/usr/lib/jvm/jdk-12.0.2" && export PATH="$PATH:${JAVA_HOME}/bin"' | tee /etc/profile.d/jdk12.sh
+
+RUN update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk-12.0.2/bin/java 1200
+
+RUN update-alternatives --config java
+
+RUN java -version
+
+
+RUN apt-get clean && \
+  rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+
+RUN npm install -g increase-memory-limit
+
+RUN nohup increase-memory-limit
+
+
+
+  # - apt-get -qq update && apt-get -qq install -y curl gnupg build-essential openssl
+  # - gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+  # - curl -sSL https://get.rvm.io | bash -s stable
+  # - source /usr/local/rvm/scripts/rvm
+  # - rvm install ruby
+  # - rvm use ruby --default
+  # - ruby -v
+  
+# RUN gem install fastlane -NV
+
+
 
 
 
