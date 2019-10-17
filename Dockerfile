@@ -102,6 +102,9 @@ RUN gem update --system
 
 RUN ruby -v
 
+RUN apt-get install -y git
+
+
 RUN apt-get clean && \
   rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
